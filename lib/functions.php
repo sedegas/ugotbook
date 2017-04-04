@@ -28,15 +28,25 @@ class API {
       'recordNumber' => $bib_id,
       'pickupLocation' => $patron['homeLibraryCode']
     );
-    
-    // create an array for request parameters
-    $params = Array(
-      'type' => 'post'
-    );
-    
-    return $this->connection->query('patrons/' . $patron['id'] . '/holds/requests' , $params);
   }
-  
+   // Send e-mail notification to patron
+  public function emailPatron($patron, $bib_id) {
+    
+    $to = $patron['emails'][1];
+    $homelibrary = $patron['homeLibraryCode'];
+
+    if (preg_match("/.*@.*\..*/", $to) > 0) {
+
+        $subject = 'You got Book!';
+        $message = 'A book you requested has arrived and a hold has been placed on your behalf';
+        $headers = 'From: UGOTBOOK@batmanlibrary.com';
+
+    mail($to, $subject, $message, $headers);
+
+    } else {
+
+    echo "No email found in patron record, hold was placed anyway";
+  }
 }
 
 /*
